@@ -164,27 +164,27 @@ jobs:
         echo "✓ Created Roo Code package"
 
         # Create archive files for each package
-        cd sdd-claude-package && zip -r ../spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        cd sdd-claude-package && zip -r ../spec-kit-template-claude-${{ steps.version.outputs.new_version }}.zip . && cd ..
 
-        cd sdd-gemini-package && zip -r ../spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        cd sdd-gemini-package && zip -r ../spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip . && cd ..
 
-        cd sdd-copilot-package && zip -r ../spec-kit-template-copilot-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        cd sdd-copilot-package && zip -r ../spec-kit-template-copilot-${{ steps.version.outputs.new_version }}.zip . && cd ..
 
-        cd sdd-auggie-package && zip -r ../spec-kit-template-auggie-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        cd sdd-auggie-package && zip -r ../spec-kit-template-auggie-${{ steps.version.outputs.new_version }}.zip . && cd ..
 
-        cd sdd-roo-package && zip -r ../spec-kit-template-roo-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        cd sdd-roo-package && zip -r ../spec-kit-template-roo-${{ steps.version.outputs.new_version }}.zip . && cd ..
 
         # List contents for verification
         echo "Claude package contents:"
-        unzip -l spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip | head -10
+        unzip -l spec-kit-template-claude-${{ steps.version.outputs.new_version }}.zip | head -10
         echo "Gemini package contents:"
-        unzip -l spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip | head -10
+        unzip -l spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip | head -10
         echo "Copilot package contents:"
-        unzip -l spec-kit-template-copilot-${{ steps.get_tag.outputs.new_version }}.zip | head -10
+        unzip -l spec-kit-template-copilot-${{ steps.version.outputs.new_version }}.zip | head -10
         echo "Auggie package contents:"
-        unzip -l spec-kit-template-auggie-${{ steps.get_tag.outputs.new_version }}.zip | head -10
+        unzip -l spec-kit-template-auggie-${{ steps.version.outputs.new_version }}.zip | head -10
         echo "Roo Code package contents:"
-        unzip -l spec-kit-template-roo-${{ steps.get_tag.outputs.new_version }}.zip | head -10
+        unzip -l spec-kit-template-roo-${{ steps.version.outputs.new_version }}.zip | head -10
         
     - name: Generate detailed release notes
       run: |
