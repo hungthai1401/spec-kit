@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Incrementally update agent context files based on new feature plan
-# Supports: CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, and .augment/guidelines.md
+# Supports: CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, .augment/guidelines.md, .roorules, .clinerules, and AGENTS.md (for Roo Code)
 # O(1) operation - only reads current context file and new plan.md
 
 set -e
@@ -16,6 +16,8 @@ GEMINI_FILE="$REPO_ROOT/GEMINI.md"
 COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"
 AGENT_FILE="$REPO_ROOT/AGENTS.md"
 AUGGIE_FILE="$REPO_ROOT/.augment/guidelines.md"
+ROO_RULES_FILE="$REPO_ROOT/.roorules"
+CLINE_RULES_FILE="$REPO_ROOT/.clinerules"
 
 # Allow override via argument
 AGENT_TYPE="$1"
@@ -207,6 +209,16 @@ case "$AGENT_TYPE" in
         mkdir -p "$(dirname "$AUGGIE_FILE")"
         update_agent_file "$AUGGIE_FILE" "Auggie CLI (Guidelines)"
         ;;
+    "roo")
+        # Roo Code supports multiple rules files with precedence: .roorules > .clinerules > AGENTS.md
+        if [ -f "$ROO_RULES_FILE" ]; then
+            update_agent_file "$ROO_RULES_FILE" "Roo Code (.roorules)"
+        elif [ -f "$CLINE_RULES_FILE" ]; then
+            update_agent_file "$CLINE_RULES_FILE" "Roo Code (.clinerules)"
+        else
+            update_agent_file "$AGENT_FILE" "Roo Code (AGENTS.md)"
+        fi
+        ;;
     "")
         # Update all existing files
         [ -f "$CLAUDE_FILE" ] && update_agent_file "$CLAUDE_FILE" "Claude Code"
@@ -216,15 +228,21 @@ case "$AGENT_TYPE" in
         [ -f "$CLAUDE_FILE" ] && update_agent_file "$CLAUDE_FILE" "Auggie CLI (Claude compatibility)"
         [ -f "$AGENT_FILE" ] && update_agent_file "$AGENT_FILE" "Auggie CLI (Agents)"
         [ -f "$AUGGIE_FILE" ] && update_agent_file "$AUGGIE_FILE" "Auggie CLI (Guidelines)"
+        # Update Roo Code files if they exist (with precedence)
+        if [ -f "$ROO_RULES_FILE" ]; then
+            update_agent_file "$ROO_RULES_FILE" "Roo Code (.roorules)"
+        elif [ -f "$CLINE_RULES_FILE" ]; then
+            update_agent_file "$CLINE_RULES_FILE" "Roo Code (.clinerules)"
+        fi
 
         # If no files exist, create based on current directory or ask user
-        if [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$GEMINI_FILE" ] && [ ! -f "$COPILOT_FILE" ] && [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$AGENT_FILE" ] && [ ! -f "$AUGGIE_FILE" ]; then
+        if [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$GEMINI_FILE" ] && [ ! -f "$COPILOT_FILE" ] && [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$AGENT_FILE" ] && [ ! -f "$AUGGIE_FILE" ] && [ ! -f "$ROO_RULES_FILE" ] && [ ! -f "$CLINE_RULES_FILE" ]; then
             echo "No agent context files found. Creating Claude Code context file by default."
             update_agent_file "$CLAUDE_FILE" "Claude Code"
         fi
         ;;
     *)
-        echo "ERROR: Unknown agent type '$AGENT_TYPE'. Use: claude, gemini, copilot, auggie, or leave empty for all."
+        echo "ERROR: Unknown agent type '$AGENT_TYPE'. Use: claude, gemini, copilot, auggie, roo, or leave empty for all."
         exit 1
         ;;
 esac
@@ -241,9 +259,10 @@ if [ ! -z "$NEW_DB" ] && [ "$NEW_DB" != "N/A" ]; then
 fi
 
 echo ""
-echo "Usage: $0 [claude|gemini|copilot|auggie]"
+echo "Usage: $0 [claude|gemini|copilot|auggie|roo]"
 echo "  - No argument: Update all existing agent context files"
 echo "  - claude: Update only CLAUDE.md"
 echo "  - gemini: Update only GEMINI.md"
 echo "  - copilot: Update only .github/copilot-instructions.md"
 echo "  - auggie: Update CLAUDE.md, AGENTS.md, and .augment/guidelines.md"
+echo "  - roo: Update .roorules, .clinerules, or AGENTS.md (with precedence) for Roo Code"
