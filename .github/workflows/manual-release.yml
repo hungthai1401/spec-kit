@@ -221,6 +221,7 @@ jobs:
           spec-kit-template-claude-${{ steps.version.outputs.new_version }}.zip \
           spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip \
           spec-kit-template-auggie-${{ steps.version.outputs.new_version }}.zip \
+          spec-kit-template-roo-${{ steps.version.outputs.new_version }}.zip \
           --title "Spec Kit Templates - $VERSION_NO_V" \
           --notes-file release_notes.md
       env:
